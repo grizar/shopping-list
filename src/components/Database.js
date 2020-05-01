@@ -1,11 +1,15 @@
-<script context="module">
 
   import PouchDB from "pouchdb-browser";
   import { writable } from "svelte/store";
-  import { setLocal } from "./Local.svelte";
+  import { setLocal } from "./Local.js";
 
+  var currentShoppingList = [];
   const shoppingList = writable([]);
   export { shoppingList }
+
+  var currentCategoryList = [];
+  const categoryList = writable([]);
+  export { categoryList }
 
   var currentParams = {};
   const allParams = writable(currentParams);
@@ -44,6 +48,7 @@
     if (currentParams.database == undefined) currentParams.database = '';
     if (currentParams.showPurchasedAtTheEnd == undefined) currentParams.showPurchasedAtTheEnd = true;
     if (currentParams.allwaysShowDeleteButton == undefined) currentParams.allwaysShowDeleteButton = false;
+    if (currentParams.showEmptyCategory == undefined) currentParams.showEmptyCategory = false;
     if (currentParams.language == undefined) currentParams.language = 'auto';
 
     allParams.set(currentParams);
@@ -80,27 +85,24 @@
 
   async function openShoppingDb() {
     shoppingDb = new PouchDB("shopping");
-    await updateShoppingList();
+    await updateList();
     if (replicationString != "") {
       const replication = PouchDB.sync("shopping",replicationString, { live: true, retry: true })
 
       replication.on("change", async function(info) {
-        await updateShoppingList();
+        await updateList();
       })
       .on("error", function(err) {
         console.log("Replication error:", err);
       });
     }
   }
-
-  export function getShoppingList() {
-    return shoppingList;
-  }
- // Helper for reloading all todos from the local PouchDB. It’s on-device and has basically zero latency,
+  
+  // Helper for reloading all todos from the local PouchDB. It’s on-device and has basically zero latency,
   // so we can use it quite liberally instead of keeping our local state up to date like you’d do
   // in a Redux reducer. It also saves us from having to rebuild the local state todos from the data we sent
   // to the database and the `_id` and `_rev` values that were sent back.
-  export async function updateShoppingList() {
+  export async function updateList() {
     const allDocs = await shoppingDb.allDocs({
       include_docs: true
     });
@@ -112,45 +114,113 @@
       produits = produits.sort(compareItem);
     }
     shoppingList.set(produits);
+    currentShoppingList = produits;
+
+    var categories = allItems.filter(item => item.type === 'category');
+    categories = categories.sort(compareCategory);
+    categoryList.set(categories);
+    currentCategoryList = categories;
   }
 
   function compareItemPurchasedEnd(item1, item2) {
-    var result = (item1.coche === item2.coche)? (item1.produit.toUpperCase() > item2.produit.toUpperCase()) : (item1.coche);
-    return (result ? 1 : -1);
+    if ((bin(item1.coche) == bin(item2.coche))) {
+      return compareItem(item1,item2);
+    } else {
+      return (bin(item1.coche) ? 1 : -1)
+    }
+  }
+
+  function bin(value) {
+    return ( value == undefined ? false : value);
   }
 
   function compareItem(item1, item2) {
     return (item1.produit.toUpperCase() > item2.produit.toUpperCase()) ? 1 : -1;
   }
+
+  function compareCategory(item1, item2) {
+    return (item1.category.toUpperCase() > item2.category.toUpperCase()) ? 1 : -1;
+  }  
+
   // Event handlers for adding, updating and removing todos
   export async function addItem(produit) {
-    const newItem = {
-      type: 'produit',
-      coche: false,
-      produit: produit
-    };
-    const addition = await shoppingDb.post(newItem);
-    if (addition.ok) {
-      await updateShoppingList();
+    const newItem = getShoppingListNewItem(produit);
+    await updateItem(newItem);
+  }
+
+  export async function updateItem(item) {
+    var result;
+    if ( item._id == undefined) {
+      result = await shoppingDb.post(item);
+    } else {
+      result = await shoppingDb.put(item);
+    }
+    if (result.ok) {
+      await updateList();
     }
   }
 
-  export async function updateItem(itemToUpdate) {
-    const update = await shoppingDb.put(itemToUpdate);
-    if (update.ok) {
-      await updateShoppingList();
-    }
-  }
-
-  export async function removeItem(itemToRemove) {
-    const removal = await shoppingDb.remove(itemToRemove);
+  export async function removeItem(item) {
+    const removal = await shoppingDb.remove(item);
     if (removal.ok) {
       // For removal, we can just update the local state instead of reloading everything from PouchDB,
       // since we no longer care about the doc’s revision.
-      shoppingList.update( items => items.filter(item => item._id !== itemToRemove._id ));
+      shoppingList.update( items => items.filter(oneItem => oneItem._id !== item._id ));
     }
   }
 
+  export function getShoppingListItem(id) {
+    var produit = currentShoppingList.filter(oneItem => oneItem._id == id);
+    return produit[0];
+  }
 
+  export function getShoppingListNewItem(produit = '', detail = '', coche = false, categoryId = '') {
+    return {
+      type: 'produit',
+      produit: produit,
+      coche: coche,
+      detail: detail,
+      categoryId : categoryId
+    };
+  }
 
-</script>
+  // Event handlers for adding, updating and removing categories
+  export async function addCategory(category) {
+    const newItem = getCategoryListNewItem(category);
+    await updateCategory(newItem);
+  }
+
+  export async function updateCategory(category) {
+    var result;
+    if (category._id == undefined) {
+      result = await shoppingDb.post(category);
+    } else {
+      result = await shoppingDb.put(category);
+    }
+    if (result.ok) {
+      await updateList();
+    }
+  }
+
+  export async function removeCategory(category) {
+    const removal = await shoppingDb.remove(category);
+    if (removal.ok) {
+      // For removal, we can just update the local state instead of reloading everything from PouchDB,
+      // since we no longer care about the doc’s revision.
+      categoryList.update( items => items.filter(oneItem => oneItem._id !== category._id ));
+    }
+  }
+
+  export function getCategoryListItem(id) {
+    var category = currentCategoryList.filter(oneItem => oneItem._id == id);
+    return category[0];
+  }
+
+  export function getCategoryListNewItem(category = '', detail = '') {
+    return {
+      type: 'category',
+      category: category,
+      detail: detail
+    };
+  }
+  

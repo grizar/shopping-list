@@ -1,4 +1,4 @@
-# List manager
+# Shopping List manager
 
 This simple software is an aims to manage todo lists.
 
@@ -7,7 +7,7 @@ This simple software is an aims to manage todo lists.
 To create a new project based on this software,use [degit](https://github.com/Rich-Harris/degit):
 
 ```bash
-npx degit grizar/list-mgr my-app
+npx degit grizar/shopping-list my-app
 cd my-app
 npm install
 ```

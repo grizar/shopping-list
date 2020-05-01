@@ -1,5 +1,3 @@
-<script context="module">
-
   import { writable } from "svelte/store";
 
   const defaultLang = window.navigator.language.slice(0, 2).toUpperCase();
@@ -25,16 +23,25 @@
         case 'FR':
             loc = {
                 // App.svelte
+                appname: 'My Shopping List',
+                categories: 'Catégories',
+                category: 'Categorie',
                 parameters: "Paramètres",
-                all: 'Courses',
+                all: 'Tout',
                 cancel: 'Annuler',
                 ok: 'OK',
                 newItem: 'Nouvel achat ...',
                 product: 'Produit',
                 added: 'ajouté',
+                detail: 'Détails',
+                empty: '** vide **',
+
+                // Category
+                emtpyCategory: 'Sans catégorie',
 
                 // Parameters.svelte
-                couchdbConf: 'Configuration Couchdb (http)',
+                settings: 'Paramètres',
+                couchdbConf: 'Couchdb',
                 serverName: 'Nom du serveur',
                 port: 'Port',
                 databaseName: 'Nom de la base de données',
@@ -48,7 +55,10 @@
                 displaySection : 'Affichage',
                 showPurchasedAtTheEnd: 'Afficher les achats réalisés en fin de liste ?',
                 allwaysShowDeleteButton: 'Toujours afficher le bouton de suppression ?',
-                language: 'Langue'
+                showEmptyCategory: 'Afficher la catégorie vide ?',
+                language: 'Langue',
+
+                creditSection: 'Crédits'
 
             }
             break;
@@ -56,16 +66,25 @@
         default:
             loc = {
                 // App.svelte
-                parameters: "Parameters",
-                all: 'Shopping',
+                appname: 'My Shopping List',
+                categories: 'Categories',
+                category: 'Category',
+                parameters: 'Parameters',
+                all: 'All',
                 cancel: 'Cancel',
                 ok: 'OK',
                 newItem: 'New product ...',
                 product: 'Product',
                 added: 'added',
+                detail: 'Details',
+                empty: '** empty **',
+
+                // Category
+                emtpyCategory: 'Empty category',
 
                 // Parameters.svelte
-                couchdbConf: 'Couchdb configuration (http)',
+                settings: 'Settings',
+                couchdbConf: 'Couchdb',
                 serverName: 'Server name',
                 port: 'Port',
                 databaseName: 'Database name',
@@ -79,11 +98,13 @@
                 displaySection : 'Display',
                 showPurchasedAtTheEnd: 'Display the purchases made at the end of the list?',
                 allwaysShowDeleteButton: 'Always show delete button?',
-                language: 'Language'
+                showEmptyCategory: 'Display empty category?',
+                language: 'Language',
+
+                creditSection: 'Credits'
+
             }
             break;
     }
     local.set(loc);
   }
-
-</script>

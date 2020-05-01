@@ -1,5 +1,5 @@
 <script>
-  import { allParams, removeItem, updateItem } from "./Database.js";
+  import { allParams, removeCategory } from "./Database.js";
 
   export let item = {};
 
@@ -7,7 +7,6 @@
   // transition:fly={{ x: -200, duration: 400 }}
 
   import { Button } from "smelte";
-  import { Checkbox } from "smelte";
   import { onMount, onDestroy } from "svelte";
   import { push } from 'svelte-spa-router';
 
@@ -107,17 +106,12 @@
     if (timerHandleDelete != null) clearTimeout(timerHandleDelete);
   });
 
-  function deleteItem() {
-    removeItem(item);
+  function deleteCategory() {
+    removeCategory(item);
   }
 
-  function saveItem() {
-    item.coche = !item.coche;
-    updateItem(item);
-  }
-
-  function editItem() {
-    var editLink = "/item/edit/" + item._id;
+  function editCategory() {
+    var editLink = "/category/edit/" + item._id;
     push(editLink);
   }
 
@@ -147,16 +141,11 @@
             flat
             light
             icon="delete_outline"
-            on:click={deleteItem} />
+            on:click={deleteCategory} />
         </div>
       {/if}
       <div class="flex w-11/12" >
-        <Checkbox checked={item.coche} on:change={saveItem} />
-        {#if item.coche}
-          <span class="line-through mb-2 self-center" on:click={editItem}>{item.produit}</span>
-        {:else}
-          <span class="mb-2 self-center" on:click={editItem}>{item.produit}</span>
-        {/if}
+          <span class="mt-2 h-8 self-center" on:click={editCategory}><p class="truncate">{item.category}</p></span>
       </div>
     </div>
     <hr />

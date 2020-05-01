@@ -1,0 +1,44 @@
+<script>
+  import { local } from "../components/Local.js";
+  import { categoryList, addCategory, removeCategory, updateCategory } from "../components/Database.js";
+
+  import Category from "../components/Category.svelte";
+
+  import { onMount, onDestroy } from "svelte";
+
+  import { createEventDispatcher } from "svelte";
+  const dispatch = createEventDispatcher();
+
+  import { fade } from "svelte/transition";
+  import { Button } from "smelte";
+  import { AppBar } from "smelte";
+
+  import { push } from 'svelte-spa-router';
+
+
+  function openDrawer() {
+    dispatch("routeEvent", { action: "openDrawer" });
+  }
+
+</script>
+
+<div in:fade>
+  <AppBar class="bg-blue-400">
+    <div class="md:hidden">
+      <Button icon="menu" small flat color="white" text on:click={openDrawer} />
+    </div>
+    <h6 class="pl-3 text-white tracking-widest font-thin text-lg">
+      {$local.categories}
+    </h6>
+  </AppBar>
+
+  <ul>
+    {#each $categoryList as item (item._id)}
+      <Category bind:item />
+    {/each}
+  </ul>
+
+  <div class="fixed px-5 py-5 bottom-0 right-0">
+    <Button color="error" icon="add" on:click={() => push('/category/new')} />
+  </div>
+</div>

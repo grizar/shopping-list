@@ -1,50 +1,44 @@
 <script>
-  export let name;
 
   import "smelte/src/tailwind.css";
 
   import { onMount } from "svelte";
 
-  import { TextField } from "smelte";
-  import { Button } from "smelte";
-  import { AppBar } from "smelte";
-  import { Dialog } from "smelte";
   import { Snackbar } from "smelte";
   import { NavigationDrawer } from "smelte";
   import { List } from "smelte";
   import { ListItem } from "smelte";
   import { fade } from "svelte/transition";
 
-  import ItemList from "./components/ItemList.svelte";
-  import Parameters from "./components/Parameters.svelte";
+  import ItemListView from "./views/ItemListView.svelte";
+  import ItemDetailView from "./views/ItemDetailView.svelte";  
+  import CategoryListView from "./views/CategoryListView.svelte";
+  import CategoryDetailView from "./views/CategoryDetailView.svelte";  
+  import ParameterView from "./views/ParameterView.svelte";
 
   import {
     shoppingList,
+    categoryList,
     openDb,
-    updateShoppingList,
-    addItem,
-    updateItem,
-    removeItem
-  } from "./components/Database.svelte";
+    allParams
+  } from "./components/Database.js";
 
-  import { local } from "./components/Local.svelte";
+  import { local } from "./components/Local.js";
 
   import Router from 'svelte-spa-router';
-  
+  import {location} from 'svelte-spa-router';
+  import {link} from 'svelte-spa-router';
+
   // routes
   const routes = {
     // Exact path
-    '/': Home,
- 
-    // Using named parameters, with last being optional
-    '/settings': Parameters,
- 
-    // Catch-all
-    // This is optional, but if present it must be the last
-    '*': Home
+    '/': ItemListView,
+    '/items/:id?': ItemListView,
+    '/item/:action/:id?': ItemDetailView,
+    '/categories': CategoryListView,
+    '/category/:action/:id?': CategoryDetailView,
+    '/settings': ParameterView 
 }
-  var currentRoute = "";
-
 
   var usingCordova = ("usingCordova" in window) ;
   if (usingCordova) {
@@ -54,7 +48,6 @@
       initApp();
     }
   } else {
-    // Open websocket when running in a browser
     onMount(async () => {
       initApp();
     });
@@ -66,41 +59,28 @@
   async function initApp() {
     // Set up local PouchDB and continuous replication to remote CouchDB
     await openDb();
-    await updateShoppingList();
-    currentRoute = "shoppingList";
   }
-  // Add dialog
-  var showAddDialog = false;
-  var item = "";
-
-  function cancelAddDialog() {
-    item = "";
-    showAddDialog = false;
-  }
-
-  function submitAddDialog() {
-    addItem(item);
-    snackbarMessage = item + ' ' + $local.added;
-    snackbarColor = "gray";
-    showSnackbar = true;
-    item = "";
-    showAddDialog = false;
-  }
-
-  function openAddDialog() {
-    item = "";
-    showAddDialog = true;
-  }
-
+  
   // Drawer functions & global variables
   var showNav = false;
   var showNavOpenByButton = false;
   var menuItems = [];
   $: {
-  menuItems = [{ id: 1, icon: "", text: $local.all, category:$local.all , dividerBefore: false, route: "shoppingList" }, { id: 2, icon: "settings", text: $local.parameters, category: "", dividerBefore: true, route: "param"}];
+    menuItems = [
+      { id: 1, icon: "", to: "/", text: $local.all , dividerBefore: false } 
+    ];
+
+    menuItems.push(...$categoryList.map( item => ({ to: '/items/' + item._id, text: item.category })));
+    if ($allParams.showEmptyCategory) {
+      menuItems.push({ to: '/items/null', text: $local.emtpyCategory });  
+    }
+    
+    menuItems.push(...[ 
+      { id: 2, icon: "storage", to:'/categories', text: $local.categories, dividerBefore: true},
+      { id: 3, icon: "settings", to:'/settings', text: $local.parameters, dividerBefore: false}
+    ]);
   }
-  var currentMenuId = 1;
-  var currentCategory = "";
+
   $: {
     $local['all'];
   }
@@ -117,9 +97,6 @@
   }
 
   function selectMenu(item) {
-    currentCategory = item.category;
-    currentMenuId = item.id;
-    currentRoute = item.route;
     if (showNavOpenByButton) showNav = false;
     showNavOpenByButton = false;
   }
@@ -129,49 +106,23 @@
   var snackbarMessage = "";
   var snackbarColor = "";
 
-  function handleParametersMessage(event) {
-    snackbarMessage = event.detail.message;
-    snackbarColor = event.detail.color;
-    showSnackbar = true;
+  function routeEvent(event) {
+    if (event.detail.action == 'displaySnackbar') {
+      snackbarMessage = event.detail.message;
+      snackbarColor = event.detail.color;
+      showSnackbar = true;
+    } else if (event.detail.action == 'openDrawer') {
+      openDrawer();
+    }
   }
-  
+
 </script>
 
-<AppBar class="bg-blue-400">
-  <div class="md:hidden">
-    <Button icon="menu" small flat color="white" text on:click={openDrawer} />
-  </div>
-  <h6 class="pl-3 text-white tracking-widest font-thin text-lg">{name}</h6>
-</AppBar>
-
-
-<Dialog persistent bind:value={showAddDialog}>
-  <h5 slot="title">{$local['newItem']}</h5>
-  <TextField
-    id="produit"
-    bind:value={item}
-    label={$local.product}
-    outlined
-    type="text"
-    min="3"
-    max="100" />
-  <div slot="actions">
-    <Button text on:click={cancelAddDialog}>{$local.cancel}</Button>
-    <Button
-      disabled={item == '' || item.length < 3}
-      text
-      on:click={submitAddDialog}>
-      {$local.ok}
-    </Button>
-  </div>
-  <script>
-    document.getElementById("produit").focus();
-  </script>
-</Dialog>
 
 <Snackbar bind:value={showSnackbar} color={snackbarColor}>
   <div>{snackbarMessage}</div>
 </Snackbar>
+
 
 <main
   class="container relative p-8 lg:max-w-5xl lg:ml-64 mx-auto mb-6 mt-10  md:ml-64 md:max-w-md md:px-">
@@ -182,34 +133,17 @@
       {#if item.dividerBefore}
         <hr />
       {/if}
-      <a href="#!" on:click={selectMenu(item)}>
+      <a href={item.to} use:link on:click={selectMenu(item)}>
         <ListItem
-          icon={item.icon}
+          icon={item.icon} class="truncate"
           {...item}
           dense
-          selected={currentMenuId == item.id} />
+          selected={$location == item.to} />
       </a>
     </span>
   </List>
 </NavigationDrawer>
 
-
-{#if currentRoute=="param"}
-  <div transition:fade|local>
-    <Parameters on:message={handleParametersMessage} />
-  </div>
-{/if}
-
-{#if currentRoute=="shoppingList"}
-  <div transition:fade|local>
-  <ItemList items={$shoppingList} />
-  </div>
-{/if}
+<Router {routes} on:routeEvent={routeEvent}/>
 
 </main>
-
-{#if currentRoute=="shoppingList"}
-<div class="fixed px-5 py-5 bottom-0 right-0">
-  <Button color="error" icon="add" on:click={openAddDialog} />
-</div>
-{/if}
