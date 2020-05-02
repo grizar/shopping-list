@@ -13,7 +13,7 @@
   import { AppBar } from "smelte";
 
   import { fade } from "svelte/transition";
-  import { push, pop, location, querystring } from "svelte-spa-router";
+  import { pop } from "svelte-spa-router";
 
   import { onMount, onDestroy } from "svelte";
 

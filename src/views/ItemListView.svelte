@@ -24,11 +24,11 @@
     if (params.id == 'null') {
       itemList = $shoppingList.filter( item => ( (item.categoryId == undefined) || (item.categoryId == '')) );
       title = $local.emtpyCategory;
-      newItemLink = '/item/new/' + ((params.id == undefined) ? '' : params.id);
+      newItemLink = '#/item/new/' + ((params.id == undefined) ? '' : params.id);
     } else {
       itemList = $shoppingList.filter( item => (params.id == undefined) ? true : item.categoryId == params.id );
       title = (params.id == undefined) ? $local.appname : $categoryList.filter( item => item._id == params.id )[0].category;
-      newItemLink = '/item/new/' + ((params.id == undefined) ? '' : params.id);
+      newItemLink = '#/item/new/' + ((params.id == undefined) ? '' : params.id);
     }
   }
 

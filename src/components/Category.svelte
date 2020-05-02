@@ -111,7 +111,7 @@
   }
 
   function editCategory() {
-    var editLink = "/category/edit/" + item._id;
+    var editLink = "#/category/edit/" + item._id;
     push(editLink);
   }
 

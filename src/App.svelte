@@ -27,7 +27,7 @@
 
   import Router from 'svelte-spa-router';
   import {location} from 'svelte-spa-router';
-  import {link} from 'svelte-spa-router';
+
 
   // routes
   const routes = {
@@ -67,17 +67,17 @@
   var menuItems = [];
   $: {
     menuItems = [
-      { id: 1, icon: "", to: "/", text: $local.all , dividerBefore: false } 
+      { id: 1, icon: "", to: "#/", text: $local.all , dividerBefore: false } 
     ];
 
-    menuItems.push(...$categoryList.map( item => ({ to: '/items/' + item._id, text: item.category })));
+    menuItems.push(...$categoryList.map( item => ({ to: '#/items/' + item._id, text: item.category })));
     if ($allParams.showEmptyCategory) {
-      menuItems.push({ to: '/items/null', text: $local.emtpyCategory });  
+      menuItems.push({ to: '#/items/null', text: $local.emtpyCategory });  
     }
     
     menuItems.push(...[ 
-      { id: 2, icon: "storage", to:'/categories', text: $local.categories, dividerBefore: true},
-      { id: 3, icon: "settings", to:'/settings', text: $local.parameters, dividerBefore: false}
+      { id: 2, icon: "storage", to:'#/categories', text: $local.categories, dividerBefore: true},
+      { id: 3, icon: "settings", to:'#/settings', text: $local.parameters, dividerBefore: false}
     ]);
   }
 
@@ -133,7 +133,7 @@
       {#if item.dividerBefore}
         <hr />
       {/if}
-      <a href={item.to} use:link on:click={selectMenu(item)}>
+      <a href={item.to} on:click={selectMenu(item)}>
         <ListItem
           icon={item.icon} class="truncate"
           {...item}

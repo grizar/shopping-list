@@ -39,6 +39,6 @@
   </ul>
 
   <div class="fixed px-5 py-5 bottom-0 right-0">
-    <Button color="error" icon="add" on:click={() => push('/category/new')} />
+    <Button color="error" icon="add" on:click={() => push('#/category/new')} />
   </div>
 </div>

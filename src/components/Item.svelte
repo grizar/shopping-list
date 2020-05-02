@@ -117,7 +117,7 @@
   }
 
   function editItem() {
-    var editLink = "/item/edit/" + item._id;
+    var editLink = "#/item/edit/" + item._id;
     push(editLink);
   }
 
