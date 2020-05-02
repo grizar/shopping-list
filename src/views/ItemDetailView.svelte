@@ -1,10 +1,11 @@
 <script>
   import { local } from "../components/Local.js";
   import {
-    getShoppingListItem,
     getShoppingListNewItem,
+    getShoppingListItem,
     updateItem,
-    categoryList
+    categoryList,
+    openDb
   } from "../components/Database.js";
 
   import { Button } from "smelte";
@@ -13,41 +14,51 @@
   import { AppBar } from "smelte";
 
   import { fade } from "svelte/transition";
-  import { pop } from "svelte-spa-router";
+  import { pop, push } from "svelte-spa-router";
 
   import { onMount, onDestroy } from "svelte";
 
   export let params = {};
 
   var item = {};
-  var isDirty = true;
+  var saveOnDestroy = true;
 
-  // Load values
-  if (params.action == "new") {
-    item = getShoppingListNewItem();
-    item.categoryId = ((params.id == undefined) ? '' : params.id) ;
-  } else {
-    // We enter this form with an existing item Id in that case
-    item = getShoppingListItem(params.id);
-  }
 
   var selectCategories = $categoryList.map( oneItem => ({ value: oneItem._id, text: oneItem.category }));
 
-  function saveItem() {
+  function saveItem(doPop = true) {
+    if (item.produit == "") item.produit = $local.empty;
     updateItem(item);
+    saveOnDestroy = false;
+    if (doPop) pop();
   }
 
-  onMount( async () => document.getElementById("produit").focus());
+    // Load values
+    if (params.action == "new") {
+      item = getShoppingListNewItem();
+      item.categoryId = ((params.id == undefined) ? '' : params.id) ;
+    } else {
+      // We enter this form with an existing item Id in that case
+      item = getShoppingListItem(params.id);
+      if (item == undefined) {
+        // Only happen if we reload the page directly
+        item = getShoppingListNewItem();
+        saveOnDestroy = false;
+        push('#/');
+      }
+    }
+
+  onMount( async () => {
+    document.getElementById("produit").focus();
+  });
+    
 
   onDestroy( async () => {
-    if (isDirty) saveItem();
+    if (saveOnDestroy) saveItem(false);
   });
 
   function back() {
-    if (item.produit == "") item.produit = $local.empty;
     saveItem();
-    isDirty = false;
-    pop();
   }
 </script>
 
@@ -56,13 +67,12 @@
     <div class="md:visible">
       <Button
         icon="keyboard_backspace"
-        small
         flat
         color="white"
         text
         on:click={back} />
     </div>
-    <h6 class="pl-3 text-white tracking-widest font-thin text-lg">
+    <h6 class="md:pl-3 text-white text-lg">
       {$local.product}
     </h6>
   </AppBar>

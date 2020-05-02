@@ -3,7 +3,8 @@
   import {
     getCategoryListItem,
     getCategoryListNewItem,
-    updateCategory
+    updateCategory,
+    openDb
   } from "../components/Database.js";
 
   import { Button } from "smelte";
@@ -11,37 +12,46 @@
   import { AppBar } from "smelte";
 
   import { fade } from "svelte/transition";
-  import { pop } from "svelte-spa-router";
+  import { pop, push } from "svelte-spa-router";
 
   import { onMount, onDestroy } from "svelte";
 
   export let params = {};
 
   var item = {};
-  var isDirty = true;
+  var saveOnDestroy = true;
+
+  function saveCategory(doPop = true) {
+    if (item.category == "") item.category = $local.empty;
+    updateCategory(item);
+    saveOnDestroy = false;
+    if (doPop) pop();
+  }
 
   // Load values
   if (params.action == "new") {
     item = getCategoryListNewItem();
   } else {
     item = getCategoryListItem(params.id);
+    console.log(item);
+    if (item == undefined) {
+      // Only happen if we reload the page directly
+      item = getCategoryListNewItem();
+      saveOnDestroy = false;
+      push('#/categories');
+    }
   }
 
-  function saveCategory() {
-      updateCategory(item);
-  }
-
-  onMount( async () => document.getElementById("category").focus());
+  onMount( async () => { 
+    document.getElementById("category").focus()
+  });
 
   onDestroy( async () => {
-    if (isDirty) saveCategory();
+    if (saveOnDestroy) saveCategory(false);
   });
 
   function back() {
-    if (item.category == "") item.category = $local.empty;
     saveCategory();
-    isDirty = false;
-    pop();
   }
 </script>
 
@@ -50,13 +60,12 @@
     <div class="md:visible">
       <Button
         icon="keyboard_backspace"
-        small
         flat
         color="white"
         text
         on:click={back} />
     </div>
-    <h6 class="pl-3 text-white tracking-widest font-thin text-lg">
+    <h6 class="md:pl-3 text-white text-lg">
       {$local.category}
     </h6>
   </AppBar>

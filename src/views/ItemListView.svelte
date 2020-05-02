@@ -27,9 +27,20 @@
       newItemLink = '#/item/new/' + ((params.id == undefined) ? '' : params.id);
     } else {
       itemList = $shoppingList.filter( item => (params.id == undefined) ? true : item.categoryId == params.id );
-      title = (params.id == undefined) ? $local.appname : $categoryList.filter( item => item._id == params.id )[0].category;
-      newItemLink = '#/item/new/' + ((params.id == undefined) ? '' : params.id);
+
+      if (params.id == undefined) {
+        title = $local.appname;
+      } else {
+        try {
+          title = $categoryList.filter( item => item._id == params.id )[0].category;
+        }
+        catch (error) {
+          // database not opened ! Will be recomputed asap
+          title = '';
+        }
+      }
     }
+    newItemLink = '#/item/new/' + ((params.id == undefined) ? '' : params.id);
   }
 
   function createNew() {
@@ -45,9 +56,9 @@
 <div in:fade>
   <AppBar class="bg-blue-400">
     <div class="md:hidden">
-      <Button icon="menu" small flat color="white" text on:click={openDrawer} />
+      <Button icon="menu"  flat color="white" text on:click={openDrawer} />
     </div>
-    <h6 class="pl-3 text-white tracking-widest font-thin text-lg">
+    <h6 class="md:pl-3 text-white text-lg">
       {title}
     </h6>
   </AppBar>

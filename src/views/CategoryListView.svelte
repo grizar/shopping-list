@@ -25,9 +25,9 @@
 <div in:fade>
   <AppBar class="bg-blue-400">
     <div class="md:hidden">
-      <Button icon="menu" small flat color="white" text on:click={openDrawer} />
+      <Button icon="menu" flat color="white" text on:click={openDrawer} />
     </div>
-    <h6 class="pl-3 text-white tracking-widest font-thin text-lg">
+    <h6 class="md:pl-3 text-white text-lg">
       {$local.categories}
     </h6>
   </AppBar>

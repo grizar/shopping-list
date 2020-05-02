@@ -8,7 +8,8 @@
   import { AppBar } from "smelte";
   import { Button } from "smelte";
 
-  import { onMount, onDestroy } from "svelte";
+  import { onDestroy } from "svelte";
+  import { push } from "svelte-spa-router";
 
   import { fade } from "svelte/transition";
 
@@ -53,17 +54,17 @@
         : "";
   }
 
-  onMount(async () => {
-    serverName = $allParams.server;
-    serverPort = $allParams.port;
-    serverDb = $allParams.database;
-    showPurchasedAtTheEnd = $allParams.showPurchasedAtTheEnd;
-    allwaysShowDeleteButton = $allParams.allwaysShowDeleteButton;
-    showEmptyCategory = $allParams.showEmptyCategory;
-
-    // document.getElementById("servername").focus();
-  });
-
+  if (Object.keys($allParams).length === 0) {
+    // Shall only happen if we reload the page directly
+    push('#/');
+  }
+  serverName = $allParams.server;
+  serverPort = $allParams.port;
+  serverDb = $allParams.database;
+  showPurchasedAtTheEnd = $allParams.showPurchasedAtTheEnd;
+  allwaysShowDeleteButton = $allParams.allwaysShowDeleteButton;
+  showEmptyCategory = $allParams.showEmptyCategory;
+ 
   onDestroy(async () => {
     var isOk;
     if (serverName == "" && serverPort == "" && serverDb == "") {
@@ -112,9 +113,9 @@
 <div in:fade>
   <AppBar class="bg-blue-400">
     <div class="md:hidden">
-      <Button icon="menu" small flat color="white" text on:click={openDrawer} />
+      <Button icon="menu" flat color="white" text on:click={openDrawer} />
     </div>
-    <h6 class="pl-3 text-white tracking-widest font-thin text-lg">
+    <h6 class="md:pl-3 text-white text-lg">
       {$local.settings}
     </h6>
   </AppBar>

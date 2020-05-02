@@ -18,7 +18,7 @@
 
   export async function openDb() {
     await openParamDb()
-    openShoppingDb();
+    await openShoppingDb();
   }
 
   // All the shopping directly from the PouchDB. Sorting and filtering comes later
@@ -28,7 +28,8 @@
   
   async function openParamDb() {
    // Open the param db
-    paramDb = new PouchDB("param");
+    // if (paramDb != undefined) return;
+    paramDb = new PouchDB("param", {auto_compaction: true});
     await readParams();  
   }
 
@@ -50,7 +51,7 @@
     if (currentParams.allwaysShowDeleteButton == undefined) currentParams.allwaysShowDeleteButton = false;
     if (currentParams.showEmptyCategory == undefined) currentParams.showEmptyCategory = false;
     if (currentParams.language == undefined) currentParams.language = 'auto';
-
+  
     allParams.set(currentParams);
 
     // Settings the language

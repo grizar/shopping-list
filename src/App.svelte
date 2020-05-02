@@ -49,13 +49,12 @@
     }
   } else {
     onMount(async () => {
-      initApp();
+      await initApp();
     });
   }
 
 
   // Load shopping list on first run
-
   async function initApp() {
     // Set up local PouchDB and continuous replication to remote CouchDB
     await openDb();
@@ -125,7 +124,7 @@
 
 
 <main
-  class="container relative p-8 lg:max-w-5xl lg:ml-64 mx-auto mb-6 mt-10  md:ml-64 md:max-w-md md:px-">
+  class="container relative p-8 lg:max-w-5xl lg:ml-64 mx-auto mb-6 mt-10  md:ml-64 md:max-w-md md:px- text-lg md:text-base">
 
 <NavigationDrawer bind:show={showNav}>
   <List items={menuItems}>
@@ -136,9 +135,9 @@
       <a href={item.to} on:click={selectMenu(item)}>
         <ListItem
           icon={item.icon} class="truncate"
-          {...item}
+          text={item.text}
           dense
-          selected={$location == item.to} />
+          selected={ ($location == item.to) || ('#' + $location == item.to)} />
       </a>
     </span>
   </List>
