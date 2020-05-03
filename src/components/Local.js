@@ -42,9 +42,9 @@
                 // Parameters.svelte
                 settings: 'Paramètres',
                 couchdbConf: 'Couchdb',
-                serverName: 'Nom du serveur',
+                serverName: 'Serveur',
                 port: 'Port',
-                databaseName: 'Nom de la base de données',
+                databaseName: 'Base de données',
 
                 portError: 'Port entre 1000 et 9999',
                 min3chars: 'Minimum 3 caractères',
@@ -56,6 +56,7 @@
                 showPurchasedAtTheEnd: 'Afficher les achats réalisés en fin de liste ?',
                 allwaysShowDeleteButton: 'Toujours afficher le bouton de suppression ?',
                 showEmptyCategory: 'Afficher la catégorie vide ?',
+                longPressToEdit: 'Appui long pour éditer ?',
                 language: 'Langue',
 
                 creditSection: 'Crédits'
@@ -85,9 +86,9 @@
                 // Parameters.svelte
                 settings: 'Settings',
                 couchdbConf: 'Couchdb',
-                serverName: 'Server name',
+                serverName: 'Server',
                 port: 'Port',
-                databaseName: 'Database name',
+                databaseName: 'Database',
 
                 portError: 'Port within 1000 and 9999',
                 min3chars: 'Minimum 3 characters',
@@ -99,6 +100,7 @@
                 showPurchasedAtTheEnd: 'Display the purchases made at the end of the list?',
                 allwaysShowDeleteButton: 'Always show delete button?',
                 showEmptyCategory: 'Display empty category?',
+                longPressToEdit: 'Long press to edit ?',
                 language: 'Language',
 
                 creditSection: 'Credits'

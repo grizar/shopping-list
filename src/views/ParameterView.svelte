@@ -28,6 +28,9 @@
   var showPurchasedAtTheEnd = true;
   var allwaysShowDeleteButton = false;
   var showEmptyCategory = false;
+  var longPressToEdit = false;
+
+  var saveOnDestroy = true;
 
   $: {
     serverPortError =
@@ -56,6 +59,7 @@
 
   if (Object.keys($allParams).length === 0) {
     // Shall only happen if we reload the page directly
+    saveOnDestroy = false;
     push('#/');
   }
   serverName = $allParams.server;
@@ -64,8 +68,11 @@
   showPurchasedAtTheEnd = $allParams.showPurchasedAtTheEnd;
   allwaysShowDeleteButton = $allParams.allwaysShowDeleteButton;
   showEmptyCategory = $allParams.showEmptyCategory;
+  longPressToEdit = $allParams.longPressToEdit;
  
   onDestroy(async () => {
+    if (!saveOnDestroy) return;
+    
     var isOk;
     if (serverName == "" && serverPort == "" && serverDb == "") {
       isOk = true;
@@ -89,6 +96,7 @@
       $allParams.showPurchasedAtTheEnd = showPurchasedAtTheEnd;
       $allParams.allwaysShowDeleteButton = allwaysShowDeleteButton;
       $allParams.showEmptyCategory = showEmptyCategory;
+      $allParams.longPressToEdit = longPressToEdit;
       setParams($allParams);
 
       dispatch("routeEvent", {
@@ -131,9 +139,10 @@
         <Checkbox
           label={$local.showEmptyCategory}
           bind:checked={showEmptyCategory} />
+        <Checkbox
+          label={$local.longPressToEdit}
+          bind:checked={longPressToEdit} />
 
-
-          
         <Select
           label={$local.language}
           items={$locLanguages}

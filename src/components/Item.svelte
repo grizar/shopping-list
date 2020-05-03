@@ -14,14 +14,17 @@
   const swipeDelay = 250; // ms
   const swipeMargin = 25; // px
   const deleteButtonVisibility = 5000; // ms
+  const longPressDelay = 1250; // ms
 
   var deleteVisible = false;
   var timerHandleTouch = null;
   var timerHandleDelete = null;
+  var timerHandleLongPress = null;
 
   var startPos = { x: -1, y: -1 };
   var currentPos = { x: -1, y: -1 };
   var inSwipe = false;
+  var inScroll = false;
 
   var pointerEventToXY = function(e) {
     var out = { x: 0, y: 0 };
@@ -54,6 +57,7 @@
     if (deleteVisible || $allParams.allwaysShowDeleteButton) return;
 
     inSwipe = false;
+    inScroll = false;
 
     // store start position
     startPos = pointerEventToXY(evt);
@@ -65,12 +69,18 @@
       if (currentPos.x == -1) {
         // no move, no swipe, nothing to do
       } else {
-        if (Math.abs(currentPos.y - startPos.y) <= swipeMargin) {
-          // Check if we are not alrady scrolling
-
+        if (Math.abs(currentPos.y - startPos.y) > swipeMargin) {
+          // We are scrolling, we cancel the long press detection
+          isScroll = true;
+          clearTimeout(timerHandleLongPress);
+          timerHandleLongPress = null;
+        } else {
+          // So, we are not scrolling, check if we are swipping
           if (Math.abs(currentPos.x - startPos.x) > swipeMargin) {
-            // swipe in progress
+            // swipe in progress, we cancel the long press detection
             inSwipe = true;
+            clearTimeout(timerHandleLongPress);
+            timerHandleLongPress = null;
             if (evt.cancelable) evt.preventDefault();
             deleteVisible = true;
             timerHandleDelete = setTimeout(() => {
@@ -81,6 +91,11 @@
         }
       }
     }, swipeDelay);
+
+    timerHandleLongPress = setTimeout( () => {
+      timerHandleLongPress = null;
+      editItem();
+    },longPressDelay);
   }
 
   function moveTouch(evt) {
@@ -91,6 +106,10 @@
   function stopTouch(evt) {
     if (deleteVisible || $allParams.allwaysShowDeleteButton) return;
 
+    if (timerHandleLongPress != null) {
+      clearTimeout(timerHandleLongPress);
+      timerHandleLongPress = null;
+    }
     if (timerHandleTouch != null) {
       // Stop the timer, it was not a swipe
       clearTimeout(timerHandleTouch);
@@ -105,13 +124,14 @@
     // Clear any timer
     if (timerHandleTouch != null) clearTimeout(timerHandleTouch);
     if (timerHandleDelete != null) clearTimeout(timerHandleDelete);
+    if (timerHandleLongPress != null) clearTimeout(timerHandleLongPress);
   });
 
   function deleteItem() {
     removeItem(item);
   }
 
-  function saveItem() {
+  function toggleItem() {
     item.coche = !item.coche;
     updateItem(item);
   }
@@ -119,6 +139,14 @@
   function editItem() {
     var editLink = "#/item/edit/" + item._id;
     push(editLink);
+  }
+
+  function clickItem() {
+    if ($allParams.longPressToEdit) {
+      toggleItem();
+    } else {
+      editItem();
+    }
   }
 
 </script>
@@ -151,11 +179,11 @@
         </div>
       {/if}
       <div class="flex w-11/12" >
-        <Checkbox checked={item.coche} on:change={saveItem} />
+        <Checkbox checked={item.coche} on:change={toggleItem} />
         {#if item.coche}
-          <span class="line-through mb-2 self-center" on:click={editItem}>{item.produit}</span>
+          <span class="line-through mb-2 self-center" on:click={clickItem}>{item.produit}</span>
         {:else}
-          <span class="mb-2 self-center" on:click={editItem}>{item.produit}</span>
+          <span class="mb-2 self-center" on:click={clickItem}>{item.produit}</span>
         {/if}
       </div>
     </div>

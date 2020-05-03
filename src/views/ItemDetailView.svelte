@@ -25,6 +25,11 @@
 
 
   var selectCategories = $categoryList.map( oneItem => ({ value: oneItem._id, text: oneItem.category }));
+  selectCategories.sort(compareCategories);
+
+  function compareCategories(cat1, cat2) {
+    return (cat1.text > cat2.text) ? 1 : -1;
+  }
 
   function saveItem(doPop = true) {
     if (item.produit == "") item.produit = $local.empty;

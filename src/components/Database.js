@@ -50,6 +50,7 @@
     if (currentParams.showPurchasedAtTheEnd == undefined) currentParams.showPurchasedAtTheEnd = true;
     if (currentParams.allwaysShowDeleteButton == undefined) currentParams.allwaysShowDeleteButton = false;
     if (currentParams.showEmptyCategory == undefined) currentParams.showEmptyCategory = false;
+    if (currentParams.longPressToEdit == undefined) currentParams.longPressToEdit = false;
     if (currentParams.language == undefined) currentParams.language = 'auto';
   
     allParams.set(currentParams);
