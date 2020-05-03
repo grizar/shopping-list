@@ -17,6 +17,7 @@
   import { pop, push } from "svelte-spa-router";
 
   import { onMount, onDestroy } from "svelte";
+  import { sansAccent } from "../utils/utils.js"
 
   export let params = {};
 
@@ -25,10 +26,10 @@
 
 
   var selectCategories = $categoryList.map( oneItem => ({ value: oneItem._id, text: oneItem.category }));
-  selectCategories.sort(compareCategories);
+  selectCategories = selectCategories.sort(compareCategories);
 
   function compareCategories(cat1, cat2) {
-    return (cat1.text > cat2.text) ? 1 : -1;
+    return (sansAccent(cat1.text.toUpperCase()) > sansAccent(cat2.text.toUpperCase())) ? 1 : -1;
   }
 
   function saveItem(doPop = true) {
@@ -91,6 +92,8 @@
     min="3"
     max="100" />
 
+  <Select bind:value={item.categoryId} label={$local.category} items={selectCategories} dense noUnderline class="mb-6" />
+
   <TextField
     id="detail"
     bind:value={item.detail}
@@ -100,7 +103,5 @@
     type="text"
     min="3"
     max="500" />
-  
-  <Select bind:value={item.categoryId} label={$local.category} items={selectCategories} />
 
 </div>

@@ -33,7 +33,6 @@
     item = getCategoryListNewItem();
   } else {
     item = getCategoryListItem(params.id);
-    console.log(item);
     if (item == undefined) {
       // Only happen if we reload the page directly
       item = getCategoryListNewItem();

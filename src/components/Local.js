@@ -52,7 +52,7 @@
                 parametersSaved: 'Paramètres sauvés !',
                 parametersError: 'Paramètres incorrects non sauvés',
                 
-                displaySection : 'Affichage',
+                displaySection : 'Affichage & comportement',
                 showPurchasedAtTheEnd: 'Afficher les achats réalisés en fin de liste ?',
                 allwaysShowDeleteButton: 'Toujours afficher le bouton de suppression ?',
                 showEmptyCategory: 'Afficher la catégorie vide ?',
@@ -96,7 +96,7 @@
                 parametersSaved: 'Parameters saved !',
                 parametersError: 'Incorrect parameters. Not saved !',
                 
-                displaySection : 'Display',
+                displaySection : 'Display & behaviour',
                 showPurchasedAtTheEnd: 'Display the purchases made at the end of the list?',
                 allwaysShowDeleteButton: 'Always show delete button?',
                 showEmptyCategory: 'Display empty category?',

@@ -184,5 +184,6 @@
   <h6><b><u>{$local.creditSection}</u></b></h6>
   <br>
   <p>Icon made by Smashicons from www.flaticon.com</p>
+  <p>Material icons by Google</p>
 
 </div>

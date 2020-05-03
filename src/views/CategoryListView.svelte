@@ -2,7 +2,7 @@
   import { local } from "../components/Local.js";
   import { categoryList, addCategory, removeCategory, updateCategory } from "../components/Database.js";
 
-  import Category from "../components/Category.svelte";
+  import Item from "../components/Item.svelte";
 
   import { onMount, onDestroy } from "svelte";
 
@@ -34,7 +34,7 @@
 
   <ul>
     {#each $categoryList as item (item._id)}
-      <Category bind:item />
+      <Item type='category' bind:item />
     {/each}
   </ul>
 

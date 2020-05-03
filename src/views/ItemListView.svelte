@@ -66,7 +66,7 @@
 
   <ul>
     {#each itemList as item (item._id)}
-      <Item bind:item />
+      <Item type='item' bind:item />
     {/each}
   </ul>
 

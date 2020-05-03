@@ -1,7 +1,8 @@
 <script>
-  import { allParams, removeItem, updateItem } from "./Database.js";
+  import { allParams, removeItem, updateItem, removeCategory, updateCategory } from "./Database.js";
 
   export let item = {};
+  export let type = "";
 
   // import { fly } from "svelte/transition";
   // transition:fly={{ x: -200, duration: 400 }}
@@ -12,9 +13,11 @@
   import { push } from 'svelte-spa-router';
 
   const swipeDelay = 250; // ms
-  const swipeMargin = 25; // px
+  const scrollMargin = 10; // px
   const deleteButtonVisibility = 5000; // ms
   const longPressDelay = 1250; // ms
+  const ratioScrollSwipe = 0.75; // Ratio between Scroll and Swipe
+  const noMoveMargin = 5; // px
 
   var deleteVisible = false;
   var timerHandleTouch = null;
@@ -61,7 +64,8 @@
 
     // store start position
     startPos = pointerEventToXY(evt);
-    currentPos = startPos;
+    // currentPos = startPos;
+    currentPos = { x: -1, y: -1 };
 
     timerHandleTouch = setTimeout(() => {
       timerHandleTouch = null;
@@ -69,14 +73,14 @@
       if (currentPos.x == -1) {
         // no move, no swipe, nothing to do
       } else {
-        if (Math.abs(currentPos.y - startPos.y) > swipeMargin) {
-          // We are scrolling, we cancel the long press detection
-          isScroll = true;
-          clearTimeout(timerHandleLongPress);
-          timerHandleLongPress = null;
-        } else {
-          // So, we are not scrolling, check if we are swipping
-          if (Math.abs(currentPos.x - startPos.x) > swipeMargin) {
+        var deltaX = Math.abs(currentPos.x - startPos.x)
+        var deltaY = Math.abs(currentPos.y - startPos.y);
+        if (deltaX > noMoveMargin || deltaY > noMoveMargin) {
+          if (deltaX == 0 || (deltaY/deltaX) > ratioScrollSwipe) {
+            inScroll = true;
+            clearTimeout(timerHandleLongPress);
+            timerHandleLongPress = null;
+          } else {
             // swipe in progress, we cancel the long press detection
             inSwipe = true;
             clearTimeout(timerHandleLongPress);
@@ -91,11 +95,19 @@
         }
       }
     }, swipeDelay);
+    
 
-    timerHandleLongPress = setTimeout( () => {
-      timerHandleLongPress = null;
-      editItem();
-    },longPressDelay);
+    if ($allParams.longPressToEdit) {
+      // Setting the timer function only if long press to edit is on
+      timerHandleLongPress = setTimeout( () => {
+        timerHandleLongPress = null;
+        // Only edit item if we didn't start a scroll
+        if (currentPos.y == -1 || Math.abs(currentPos.y - startPos.y) <= scrollMargin) {
+          if (evt.cancelable) evt.preventDefault();
+          editItem();
+        }
+      },longPressDelay);
+    }
   }
 
   function moveTouch(evt) {
@@ -128,16 +140,24 @@
   });
 
   function deleteItem() {
-    removeItem(item);
+    if (type == 'item') {
+      removeItem(item);
+    } else {
+      removeCategory(item);
+    }
   }
 
   function toggleItem() {
-    item.coche = !item.coche;
-    updateItem(item);
+    if (type == 'item') {
+      item.coche = !item.coche;
+      updateItem(item);
+    }
   }
 
   function editItem() {
-    var editLink = "#/item/edit/" + item._id;
+    var editLink = '';
+    editLink = (type == 'item') ? "#/item/edit/" : "#/category/edit/";
+    editLink += item._id;
     push(editLink);
   }
 
@@ -164,26 +184,26 @@
   on:touchcancel={stopTouch}>
   <li class="flex-grow">
     <div class="flex">
+    <div class="flex w-11/12" >
       {#if deleteVisible || $allParams.allwaysShowDeleteButton}
-        <div
-          class="w-2/12 items-center" >
-          
           <Button
-            add="align-middle mt-1"
+            add="align-middle mr-3 mt-1"
             color="error"
             small
             flat
             light
             icon="delete_outline"
             on:click={deleteItem} />
-        </div>
       {/if}
-      <div class="flex w-11/12" >
-        <Checkbox checked={item.coche} on:change={toggleItem} />
-        {#if item.coche}
-          <span class="line-through mb-2 self-center" on:click={clickItem}>{item.produit}</span>
+        {#if type=='item'}
+          <Checkbox checked={item.coche} on:change={toggleItem} />
+          {#if item.coche}
+            <span class="line-through mb-2 self-center" on:click={clickItem}>{item.produit}</span>
+          {:else}
+            <span class="mb-2 self-center" on:click={clickItem}>{item.produit}</span>
+          {/if}
         {:else}
-          <span class="mb-2 self-center" on:click={clickItem}>{item.produit}</span>
+          <span class="mt-2 h-8 self-center" on:click={clickItem}><p class="truncate">{item.category}</p></span>
         {/if}
       </div>
     </div>

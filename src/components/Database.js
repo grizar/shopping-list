@@ -2,6 +2,7 @@
   import PouchDB from "pouchdb-browser";
   import { writable } from "svelte/store";
   import { setLocal } from "./Local.js";
+  import { sansAccent} from "../utils/utils.js"
 
   var currentShoppingList = [];
   const shoppingList = writable([]);
@@ -137,11 +138,11 @@
   }
 
   function compareItem(item1, item2) {
-    return (item1.produit.toUpperCase() > item2.produit.toUpperCase()) ? 1 : -1;
+    return (sansAccent(item1.produit.toUpperCase()) > sansAccent(item2.produit.toUpperCase())) ? 1 : -1;
   }
 
   function compareCategory(item1, item2) {
-    return (item1.category.toUpperCase() > item2.category.toUpperCase()) ? 1 : -1;
+    return (sansAccent(item1.category.toUpperCase()) > sansAccent(item2.category.toUpperCase())) ? 1 : -1;
   }  
 
   // Event handlers for adding, updating and removing todos
@@ -210,6 +211,15 @@
       // For removal, we can just update the local state instead of reloading everything from PouchDB,
       // since we no longer care about the doc’s revision.
       categoryList.update( items => items.filter(oneItem => oneItem._id !== category._id ));
+
+      // Now, we remove the category Id of all related items
+      for (const item of currentShoppingList) {
+        if (item.categoryId == category._id) {
+          item.categoryId = '';
+          await shoppingDb.put(item);
+        }
+      }
+      await updateList();
     }
   }
 
@@ -226,3 +236,5 @@
     };
   }
   
+
+
