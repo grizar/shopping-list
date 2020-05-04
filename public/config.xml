@@ -13,7 +13,6 @@
     <platform name="android">
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
-            <uses-permission android:name="android.permission.CAMERA" />
         </edit-config>
     </platform>
 
