@@ -41,6 +41,6 @@
 
     <plugin name="cordova-plugin-whitelist" />
     <plugin name="cordova-plugin-splashscreen" />
-    <plugin name="cordova-plugin-barcodescanner" />
+    <plugin name="phonegap-plugin-barcodescanner" />
 
 </widget>
