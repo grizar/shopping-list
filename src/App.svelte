@@ -20,7 +20,8 @@
     shoppingList,
     categoryList,
     openDb,
-    allParams
+    allParams,
+    runOnCordova
   } from "./components/Database.js";
 
   import { local } from "./components/Local.js";
@@ -28,6 +29,8 @@
   import Router from 'svelte-spa-router';
   import {location} from 'svelte-spa-router';
 
+  // Manage the cordova satus
+  $runOnCordova = ("usingCordova" in window);
 
   // routes
   const routes = {
@@ -40,8 +43,7 @@
     '/settings': ParameterView 
 }
 
-  var usingCordova = ("usingCordova" in window) ;
-  if (usingCordova) {
+  if ($runOnCordova) {
     document.addEventListener("deviceready", onDeviceReady, false);
     function onDeviceReady() {
       // Now safe to use device APIs

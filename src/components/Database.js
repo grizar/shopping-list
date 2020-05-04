@@ -4,6 +4,11 @@
   import { setLocal } from "./Local.js";
   import { sansAccent} from "../utils/utils.js"
 
+  // Share the cordova status everywhere
+  var runOnCordova = writable(false);
+  export { runOnCordova }
+
+  // Variable share in the whole application
   var currentShoppingList = [];
   const shoppingList = writable([]);
   export { shoppingList }

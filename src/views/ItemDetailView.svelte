@@ -5,7 +5,8 @@
     getShoppingListItem,
     updateItem,
     categoryList,
-    openDb
+    openDb,
+    runOnCordova
   } from "../components/Database.js";
 
   import { Button } from "smelte";
@@ -66,6 +67,20 @@
   function back() {
     saveItem();
   }
+
+  function barcodeScan() {
+    cordova.plugins.barcodeScanner.scan(
+      function (result) {
+          alert("We got a barcode\n" +
+                "Result: " + result.text + "\n" +
+                "Format: " + result.format + "\n" +
+                "Cancelled: " + result.cancelled);
+      },
+      function (error) {
+          alert("Scanning failed: " + error);
+      }
+   );
+  }
 </script>
 
 <div in:fade>
@@ -103,5 +118,9 @@
     type="text"
     min="3"
     max="500" />
+
+    {#if $runOnCordova}
+          <Button light on:click={barcodeScan}></Button>
+    {/if}
 
 </div>
