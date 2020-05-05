@@ -13,6 +13,7 @@
   import { TextField } from "smelte";
   import { Select } from "smelte";
   import { AppBar } from "smelte";
+  import { Spacer } from "smelte";
 
   import { fade } from "svelte/transition";
   import { pop, push } from "svelte-spa-router";
@@ -21,6 +22,9 @@
   import { sansAccent } from "../utils/utils.js";
 
   import { getOpenFacts } from "../components/OpenFacts.js";
+
+  import { createEventDispatcher } from "svelte";
+  const dispatch = createEventDispatcher();
 
   export let params = {};
 
@@ -75,11 +79,23 @@
       async function (result) {
           if (!result.cancelled) {
             var description = await getOpenFacts(result.text);
-            if (description != null) item.detail = description;
+            if (description != null) {
+              item.product = description;
+            } else {
+              dispatch("routeEvent", {
+                action: "displaySnackbar",
+                message: $local.scanNotFound,
+                color: "alert"
+              });
+            }
           }
       },
       function (error) {
-          alert("Scanning failed: " + error);
+        dispatch("routeEvent", {
+          action: "displaySnackbar",
+          message: $local.scanError + error,
+          color: "error"
+        });
       },
       {
           preferFrontCamera : false, // iOS and Android
@@ -112,6 +128,10 @@
     <h6 class="md:pl-3 text-white text-lg">
       {$local.product}
     </h6>
+    {#if $runOnCordova}
+      <Spacer />
+      <Button icon="calendar_view_day" iconClasses="transform rotate-90" color="white" flat text on:click={barcodeScan} />
+    {/if}    
   </AppBar>
 
   <TextField
@@ -135,8 +155,6 @@
     min="3"
     max="500" />
 
-    {#if $runOnCordova}
-          <Button light block on:click={barcodeScan}>Scan Code Bar</Button>
-    {/if}
+
 
 </div>

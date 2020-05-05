@@ -58,6 +58,7 @@
                 showEmptyCategory: 'Afficher la catégorie vide ?',
                 longPressToEdit: 'Appui long pour éditer ?',
                 language: 'Langue',
+                fontSize: 'Taille police',
 
                 creditSection: 'Crédits'
 
@@ -102,8 +103,14 @@
                 showEmptyCategory: 'Display empty category?',
                 longPressToEdit: 'Long press to edit ?',
                 language: 'Language',
+                fontSize: 'Font size',
 
-                creditSection: 'Credits'
+                creditSection: 'Credits',
+
+                // Misc
+                scanError: 'Scan error : ',
+                scanNotFound: 'Product not found',
+                scanMessage: ''
 
             }
             break;

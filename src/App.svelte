@@ -126,7 +126,7 @@
 
 
 <main
-  class="container relative p-8 lg:max-w-5xl lg:ml-64 mx-auto mb-6 mt-10  md:ml-64 md:max-w-md md:px- text-lg md:text-base">
+  class="container relative p-8 lg:max-w-5xl lg:ml-64 mx-auto mb-6 mt-10  md:ml-64 md:max-w-md md:px- {$allParams.fontSize}">
 
 <NavigationDrawer bind:show={showNav}>
   <List items={menuItems}>

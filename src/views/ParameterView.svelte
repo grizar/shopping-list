@@ -7,6 +7,7 @@
   import { Select } from "smelte";
   import { AppBar } from "smelte";
   import { Button } from "smelte";
+  import { RadioButtonGroup } from "smelte";
 
   import { onDestroy } from "svelte";
   import { push } from "svelte-spa-router";
@@ -148,6 +149,9 @@
           items={$locLanguages}
           bind:value={$allParams.language}
           on:change={setLocal($allParams.language)} />
+
+        <span>{$local.fontSize}</span>
+          <RadioButtonGroup classes="flex-col3" bind:selected={$allParams.fontSize} name="fontSize" items={[{ value: 'text-sm', label: 'A', classes:'text-sm' }, { value: 'text-base', label: 'A', classes:'text-base' } , { value: 'text-lg', label: 'A', classes:'text-lg' }]} />
   <hr><br>
   <h6><b><u>{$local.couchdbConf}</u></b></h6>
   <br>

@@ -58,7 +58,8 @@
     if (currentParams.showEmptyCategory == undefined) currentParams.showEmptyCategory = false;
     if (currentParams.longPressToEdit == undefined) currentParams.longPressToEdit = false;
     if (currentParams.language == undefined) currentParams.language = 'auto';
-  
+    if (currentParams.fontSize == undefined) currentParams.fontSize = 'text-sm';
+
     allParams.set(currentParams);
 
     // Settings the language

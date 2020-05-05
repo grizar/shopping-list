@@ -203,7 +203,7 @@
             <span class="mb-2 self-center" on:click={clickItem}>{item.produit}</span>
           {/if}
         {:else}
-          <span class="mt-2 h-8 self-center" on:click={clickItem}><p class="truncate">{item.category}</p></span>
+          <span class="mt-2 h-8 self-center" on:click={clickItem}>{item.category}</span>
         {/if}
       </div>
     </div>
