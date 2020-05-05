@@ -14,6 +14,7 @@
   import { Select } from "smelte";
   import { AppBar } from "smelte";
   import { Spacer } from "smelte";
+  import { Image } from "smelte";
 
   import { fade } from "svelte/transition";
   import { pop, push } from "svelte-spa-router";
@@ -74,22 +75,29 @@
     saveItem();
   }
 
+  async function getBarcodeInfo(result) {
+    if (!result.cancelled) {
+      var produit = await getOpenFacts(result.text);
+      if (produit != null) {
+        item.produit = produit.product_name;
+        item.ean = result.text;
+        item.image_small_url = produit.image_small_url;
+        item.image_url = produit.image_url;
+        item.detail = produit.brands;
+      } else {
+        dispatch("routeEvent", {
+          action: "displaySnackbar",
+          message: $local.scanNotFound,
+          color: "alert"
+        });
+      }
+    }
+  }
+
+
   async function barcodeScan() {
     cordova.plugins.barcodeScanner.scan(
-      async function (result) {
-          if (!result.cancelled) {
-            var description = await getOpenFacts(result.text);
-            if (description != null) {
-              item.product = description;
-            } else {
-              dispatch("routeEvent", {
-                action: "displaySnackbar",
-                message: $local.scanNotFound,
-                color: "alert"
-              });
-            }
-          }
-      },
+      getBarcodeInfo,
       function (error) {
         dispatch("routeEvent", {
           action: "displaySnackbar",
@@ -103,7 +111,7 @@
           showTorchButton : true, // iOS and Android
           torchOn: false, // Android, launch with the torch switched on (if available)
           saveHistory: false, // Android, save scan history (default false)
-          prompt : "Place a barcode inside the scan area", // Android
+          prompt : $local.scanPrompt, // Android
           resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
           formats : "EAN_13", // default: all but PDF_417 and RSS_EXPANDED
           orientation : "portrait", // Android only (portrait|landscape), default unset so it rotates with the device
@@ -154,6 +162,15 @@
     type="text"
     min="3"
     max="500" />
+
+  {#if item.image_url != undefined && item.image_url != ''}  
+  <div class="text-center">
+  <Image 
+      src="{item.image_url}"
+      alt="{item.produit}"
+    />
+  </div>
+  {/if}
 
 
 

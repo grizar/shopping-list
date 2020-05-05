@@ -4,7 +4,6 @@ function _getBaseUrl(category) {
 
 async function getProduct(ean, category) {
   const url = _getBaseUrl(category) + '/api/v0/product/' + ean + '.json';
-  console.log(url);
   try {
       const response = await fetch(url, {
           method: 'GET',
@@ -15,7 +14,6 @@ async function getProduct(ean, category) {
           }
       });
       const product = await response.json();
-      console.log(product);
       if (product.status === 0) {
           return null;
       }
@@ -30,11 +28,11 @@ async function getProduct(ean, category) {
 export async function getOpenFacts(ean) {
   var produit = await getProduct(ean,'Food');
   if (produit != null) {
-    return produit.product.product_name;
+    return produit.product;
   } else {
     produit = await getProduct(ean,'Beauty');
     if (produit != null) {
-      return produit.product.product_name;
+      return produit.product;
     } else {
       return null;
     }

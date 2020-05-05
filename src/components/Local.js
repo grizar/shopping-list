@@ -60,8 +60,13 @@
                 language: 'Langue',
                 fontSize: 'Taille police',
 
-                creditSection: 'Crédits'
+                creditSection: 'Crédits',
 
+                // Misc
+                scanError: 'Erreur scan : ',
+                scanNotFound: 'Produit non trouvé',
+                scanPrompt: 'Visez un barcode'
+                
             }
             break;
         case 'EN':
@@ -110,7 +115,7 @@
                 // Misc
                 scanError: 'Scan error : ',
                 scanNotFound: 'Product not found',
-                scanMessage: ''
+                scanPrompt: 'Place a barcode inside the scan area'
 
             }
             break;

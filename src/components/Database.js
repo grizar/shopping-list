@@ -189,7 +189,10 @@
       produit: produit,
       coche: coche,
       detail: detail,
-      categoryId : categoryId
+      categoryId: categoryId,
+      ean: '',
+      image_small_url: '',
+      image_url: ''
     };
   }
 
