@@ -18,7 +18,9 @@
   import { pop, push } from "svelte-spa-router";
 
   import { onMount, onDestroy } from "svelte";
-  import { sansAccent } from "../utils/utils.js"
+  import { sansAccent } from "../utils/utils.js";
+
+  import { getOpenFacts } from "../components/OpenFacts.js";
 
   export let params = {};
 
@@ -68,13 +70,17 @@
     saveItem();
   }
 
-  function barcodeScan() {
+  async function barcodeScan() {
     cordova.plugins.barcodeScanner.scan(
-      function (result) {
+      async function (result) {
           alert("We got a barcode\n" +
                 "Result: " + result.text + "\n" +
                 "Format: " + result.format + "\n" +
                 "Cancelled: " + result.cancelled);
+          if (!result.cancelled) {
+            var description = await getOpenFacts(result.text);
+            if (description != null) item.detail = description;
+          }
       },
       function (error) {
           alert("Scanning failed: " + error);
@@ -94,6 +100,11 @@
       }
    );
   }
+
+async function getEAN() {
+  var result = await getOpenFacts(item.produit);
+  if (result != null) item.detail = result;
+}
 </script>
 
 <div in:fade>
@@ -133,7 +144,8 @@
     max="500" />
 
     {#if $runOnCordova}
-          <Button light on:click={barcodeScan}></Button>
+          <Button light on:click={barcodeScan}>Scan Code Bar</Button>
     {/if}
+    <Button light on:click={getEAN}>Get Product</Button>
 
 </div>
