@@ -1,5 +1,11 @@
 <script>
-  import { allParams, removeItem, updateItem, removeCategory, updateCategory } from "./Database.js";
+  import {
+    allParams,
+    removeItem,
+    updateItem,
+    removeCategory,
+    updateCategory
+  } from "./Database.js";
 
   export let item = {};
   export let type = "";
@@ -10,7 +16,7 @@
   import { Button } from "smelte";
   import { Checkbox } from "smelte";
   import { onMount, onDestroy } from "svelte";
-  import { push } from 'svelte-spa-router';
+  import { push } from "svelte-spa-router";
 
   const swipeDelay = 250; // ms
   const scrollMargin = 10; // px
@@ -73,10 +79,10 @@
       if (currentPos.x == -1) {
         // no move, no swipe, nothing to do
       } else {
-        var deltaX = Math.abs(currentPos.x - startPos.x)
+        var deltaX = Math.abs(currentPos.x - startPos.x);
         var deltaY = Math.abs(currentPos.y - startPos.y);
         if (deltaX > noMoveMargin || deltaY > noMoveMargin) {
-          if (deltaX == 0 || (deltaY/deltaX) > ratioScrollSwipe) {
+          if (deltaX == 0 || deltaY / deltaX > ratioScrollSwipe) {
             inScroll = true;
             clearTimeout(timerHandleLongPress);
             timerHandleLongPress = null;
@@ -95,18 +101,20 @@
         }
       }
     }, swipeDelay);
-    
 
     if ($allParams.longPressToEdit) {
       // Setting the timer function only if long press to edit is on
-      timerHandleLongPress = setTimeout( () => {
+      timerHandleLongPress = setTimeout(() => {
         timerHandleLongPress = null;
         // Only edit item if we didn't start a scroll
-        if (currentPos.y == -1 || Math.abs(currentPos.y - startPos.y) <= scrollMargin) {
+        if (
+          currentPos.y == -1 ||
+          Math.abs(currentPos.y - startPos.y) <= scrollMargin
+        ) {
           if (evt.cancelable) evt.preventDefault();
           editItem();
         }
-      },longPressDelay);
+      }, longPressDelay);
     }
   }
 
@@ -140,7 +148,7 @@
   });
 
   function deleteItem() {
-    if (type == 'item') {
+    if (type == "item") {
       removeItem(item);
     } else {
       removeCategory(item);
@@ -148,15 +156,15 @@
   }
 
   function toggleItem() {
-    if (type == 'item') {
+    if (type == "item") {
       item.coche = !item.coche;
       updateItem(item);
     }
   }
 
   function editItem() {
-    var editLink = '';
-    editLink = (type == 'item') ? "#/item/edit/" : "#/category/edit/";
+    var editLink = "";
+    editLink = type == "item" ? "#/item/edit/" : "#/category/edit/";
     editLink += item._id;
     push(editLink);
   }
@@ -168,12 +176,10 @@
       editItem();
     }
   }
-
 </script>
 
 <div
   class="flex"
-  
   on:mousedown={startTouch}
   on:mousemove={moveTouch}
   on:mouseup={stopTouch}
@@ -183,30 +189,34 @@
   on:touchend={stopTouch}
   on:touchcancel={stopTouch}>
   <li class="flex-grow">
-    <div class="flex">
-    <div class="flex w-11/12" >
-      {#if deleteVisible || $allParams.allwaysShowDeleteButton}
+      <div class="flex">
+        {#if deleteVisible || $allParams.allwaysShowDeleteButton}
           <Button
-            add="align-middle mr-3 mt-1"
+            add="flex-none align-middle mr-3 mt-1"
             color="error"
             small
             flat
             light
             icon="delete_outline"
             on:click={deleteItem} />
-      {/if}
-        {#if type=='item'}
-          <Checkbox checked={item.coche} on:change={toggleItem} />
-          {#if item.coche}
-            <span class="line-through mb-2 self-center" on:click={clickItem}>{item.produit}</span>
-          {:else}
-            <span class="mb-2 self-center" on:click={clickItem}>{item.produit}</span>
-          {/if}
-        {:else}
-          <span class="mt-2 h-8 self-center" on:click={clickItem}>{item.category}</span>
         {/if}
+          {#if type == 'item'}
+            <Checkbox checked={item.coche} on:change={toggleItem} />
+            {#if item.coche}
+              <span class="line-through mb-2 self-center" on:click={clickItem}>
+                {item.produit}
+              </span>
+            {:else}
+              <span class="mb-2 self-center" on:click={clickItem}>
+                {item.produit}
+              </span>
+            {/if}
+          {:else}
+            <span class="mt-2 h-8 self-center" on:click={clickItem}>
+              {item.category}
+            </span>
+          {/if}
       </div>
-    </div>
-    <hr />
+      <hr />
   </li>
 </div>

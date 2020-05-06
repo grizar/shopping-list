@@ -15,6 +15,7 @@
   import { AppBar } from "smelte";
   import { Spacer } from "smelte";
   import { Image } from "smelte";
+  import { ProgressCircular } from "smelte";
 
   import { fade } from "svelte/transition";
   import { pop, push } from "svelte-spa-router";
@@ -31,8 +32,8 @@
 
   var item = {};
   var saveOnDestroy = true;
-
-
+  var queryInProgress = false;
+  
   var selectCategories = $categoryList.map( oneItem => ({ value: oneItem._id, text: oneItem.category }));
   selectCategories = selectCategories.sort(compareCategories);
 
@@ -76,6 +77,7 @@
   }
 
   async function getBarcodeInfo(result) {
+    queryInProgress = true;
     if (!result.cancelled) {
       var produit = await getOpenFacts(result.text);
       if (produit != null) {
@@ -92,6 +94,7 @@
         });
       }
     }
+    queryInProgress = false;
   }
 
 
@@ -138,7 +141,11 @@
     </h6>
     {#if $runOnCordova}
       <Spacer />
-      <Button icon="calendar_view_day" iconClasses="transform rotate-90" color="white" flat text on:click={barcodeScan} />
+      {#if queryInProgress}
+        <ProgressCircular size="50" color="alert" />
+      {:else}
+        <Button icon="calendar_view_day" iconClass="text-white transform rotate-90" color="white" flat text on:click={barcodeScan} />
+      {/if}
     {/if}    
   </AppBar>
 
