@@ -40,12 +40,22 @@ function readParams(params) {
 
   function getString(key, defaultValue) {
     var value = localStorage.getItem(key);
-    return (value == 'undefined') ? defaultValue : value;
+    if (value == null) {
+      localStorage.setItem(key, defaultValue);
+      return defaultValue;
+    } else {
+      return value;
+    }
   }
 
   function getBoolean(key, defaultValue) {
     var value = localStorage.getItem(key);
-    return (value == 'undefined') ? defaultValue : (value == "1" ? true : false);
+    if (value == null) {
+      localStorage.setItem(key, defaultValue ? "1" : "0");
+      return defaultValue;
+    } else {
+      return (value == "1" ? true : false);
+    }
   }
 
   // Upgrade parameter object to latest parameters set
@@ -59,7 +69,7 @@ function readParams(params) {
   params.showEmptyCategory = getBoolean('showEmptyCategory', false);
   params.language = getString('language', 'auto');
   params.fontSize = getString('fontSize', 'text-sm');
-  params.startLocation = getString('startLocation', '#/');
+  params.startLocation = getString('startLocation', '/');
 
   return params;
 }
