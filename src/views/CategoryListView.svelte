@@ -1,6 +1,9 @@
 <script>
-  import { local } from "../components/Local.js";
-  import { categoryList, addCategory, removeCategory, updateCategory } from "../components/Database.js";
+  import {
+    parameters,
+    local,
+    categoryList
+  } from "../components/state.js";
 
   import Item from "../components/Item.svelte";
 
@@ -13,13 +16,15 @@
   import { Button } from "smelte";
   import { AppBar } from "smelte";
 
-  import { push } from 'svelte-spa-router';
+  import { push, location } from "svelte-spa-router";
 
+  // Save current location
+  $parameters.startLocation = $location;
+  parameters.saveParams();
 
   function openDrawer() {
     dispatch("routeEvent", { action: "openDrawer" });
   }
-
 </script>
 
 <div in:fade>
@@ -27,14 +32,12 @@
     <div class="md:hidden">
       <Button icon="menu" flat color="white" text on:click={openDrawer} />
     </div>
-    <h6 class="md:pl-3 text-white text-lg">
-      {$local.categories}
-    </h6>
+    <h6 class="md:pl-3 text-white text-lg">{$local.categories}</h6>
   </AppBar>
 
   <ul>
     {#each $categoryList as item (item._id)}
-      <Item type='category' bind:item />
+      <Item type="category" bind:item />
     {/each}
   </ul>
 

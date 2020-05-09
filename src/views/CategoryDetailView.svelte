@@ -1,12 +1,8 @@
 <script>
-  import { local } from "../components/Local.js";
   import {
-    getCategoryListItem,
-    getCategoryListNewItem,
-    updateCategory,
-    openDb
-  } from "../components/Database.js";
-
+    local,
+    database
+  } from "../components/state.js";
   import { Button } from "smelte";
   import { TextField } from "smelte";
   import { AppBar } from "smelte";
@@ -23,29 +19,29 @@
 
   function saveCategory(doPop = true) {
     if (item.category == "") item.category = $local.empty;
-    updateCategory(item);
+    database.updateCategory(item);
     saveOnDestroy = false;
     if (doPop) pop();
   }
 
   // Load values
   if (params.action == "new") {
-    item = getCategoryListNewItem();
+    item = database.getCategoryListNewItem();
   } else {
-    item = getCategoryListItem(params.id);
+    item = database.getCategoryListItem(params.id);
     if (item == undefined) {
       // Only happen if we reload the page directly
-      item = getCategoryListNewItem();
+      item = database.getCategoryListNewItem();
       saveOnDestroy = false;
-      push('#/categories');
+      push("#/categories");
     }
   }
 
-  onMount( async () => { 
-    document.getElementById("category").focus()
+  onMount(async () => {
+    document.getElementById("category").focus();
   });
 
-  onDestroy( async () => {
+  onDestroy(async () => {
     if (saveOnDestroy) saveCategory(false);
   });
 
@@ -64,9 +60,7 @@
         text
         on:click={back} />
     </div>
-    <h6 class="md:pl-3 text-white text-lg">
-      {$local.category}
-    </h6>
+    <h6 class="md:pl-3 text-white text-lg">{$local.category}</h6>
   </AppBar>
 
   <TextField

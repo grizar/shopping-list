@@ -1,6 +1,10 @@
 <script>
-  import { local } from "../components/Local.js";
-  import { shoppingList, categoryList, addItem, removeItem, updateItem } from "../components/Database.js";
+  import {
+    parameters,
+    local,
+    shoppingList,
+    categoryList
+  } from "../components/state.js";
 
   import Item from "../components/Item.svelte";
 
@@ -13,34 +17,42 @@
   import { Button } from "smelte";
   import { AppBar } from "smelte";
 
-  import { push } from 'svelte-spa-router';
+  import { push, location } from "svelte-spa-router";
 
   export let params = {};
   var itemList = [];
   var title;
   var newItemLink;
-  $: {
 
-    if (params.id == 'null') {
-      itemList = $shoppingList.filter( item => ( (item.categoryId == undefined) || (item.categoryId == '')) );
+  // Save current location
+  $parameters.startLocation = $location;
+  parameters.saveParams();
+
+  $: {
+    if (params.id == "null") {
+      itemList = $shoppingList.filter(
+        item => item.categoryId == undefined || item.categoryId == ""
+      );
       title = $local.emtpyCategory;
-      newItemLink = '#/item/new/' + ((params.id == undefined) ? '' : params.id);
+      newItemLink = "#/item/new/" + (params.id == undefined ? "" : params.id);
     } else {
-      itemList = $shoppingList.filter( item => (params.id == undefined) ? true : item.categoryId == params.id );
+      itemList = $shoppingList.filter(item =>
+        params.id == undefined ? true : item.categoryId == params.id
+      );
 
       if (params.id == undefined) {
         title = $local.appname;
       } else {
         try {
-          title = $categoryList.filter( item => item._id == params.id )[0].category;
-        }
-        catch (error) {
+          title = $categoryList.filter(item => item._id == params.id)[0]
+            .category;
+        } catch (error) {
           // database not opened ! Will be recomputed asap
-          title = '';
+          title = "";
         }
       }
     }
-    newItemLink = '#/item/new/' + ((params.id == undefined) ? '' : params.id);
+    newItemLink = "#/item/new/" + (params.id == undefined ? "" : params.id);
   }
 
   function createNew() {
@@ -50,23 +62,19 @@
   function openDrawer() {
     dispatch("routeEvent", { action: "openDrawer" });
   }
-
 </script>
 
 <div in:fade>
   <AppBar class="bg-blue-400">
     <div class="md:hidden">
-      <Button icon="menu"  flat color="white" text on:click={openDrawer} />
+      <Button icon="menu" flat color="white" text on:click={openDrawer} />
     </div>
-    <h6 class="md:pl-3 text-white text-lg">
-      {title}
-    </h6>
+    <h6 class="md:pl-3 text-white text-lg">{title}</h6>
   </AppBar>
-
 
   <ul>
     {#each itemList as item (item._id)}
-      <Item type='item' bind:item />
+      <Item type="item" bind:item />
     {/each}
   </ul>
 

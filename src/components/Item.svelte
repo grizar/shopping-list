@@ -1,12 +1,9 @@
 <script>
   import {
-    allParams,
-    removeItem,
-    updateItem,
-    removeCategory,
-    updateCategory
-  } from "./Database.js";
-
+    parameters,
+    local,
+    database
+  } from "./state.js";
   export let item = {};
   export let type = "";
 
@@ -63,7 +60,7 @@
 
   function startTouch(evt) {
     // no swipe detection if delete button is already visible
-    if (deleteVisible || $allParams.allwaysShowDeleteButton) return;
+    if (deleteVisible || $parameters.allwaysShowDeleteButton) return;
 
     inSwipe = false;
     inScroll = false;
@@ -102,7 +99,7 @@
       }
     }, swipeDelay);
 
-    if ($allParams.longPressToEdit) {
+    if ($parameters.longPressToEdit) {
       // Setting the timer function only if long press to edit is on
       timerHandleLongPress = setTimeout(() => {
         timerHandleLongPress = null;
@@ -124,7 +121,7 @@
   }
 
   function stopTouch(evt) {
-    if (deleteVisible || $allParams.allwaysShowDeleteButton) return;
+    if (deleteVisible || $parameters.allwaysShowDeleteButton) return;
 
     if (timerHandleLongPress != null) {
       clearTimeout(timerHandleLongPress);
@@ -149,16 +146,16 @@
 
   function deleteItem() {
     if (type == "item") {
-      removeItem(item);
+      database.removeItem(item);
     } else {
-      removeCategory(item);
+      database.removeCategory(item);
     }
   }
 
   function toggleItem() {
     if (type == "item") {
       item.coche = !item.coche;
-      updateItem(item);
+      database.updateItem(item);
     }
   }
 
@@ -170,7 +167,7 @@
   }
 
   function clickItem() {
-    if ($allParams.longPressToEdit) {
+    if ($parameters.longPressToEdit) {
       toggleItem();
     } else {
       editItem();
@@ -189,34 +186,34 @@
   on:touchend={stopTouch}
   on:touchcancel={stopTouch}>
   <li class="flex-grow">
-      <div class="flex">
-        {#if deleteVisible || $allParams.allwaysShowDeleteButton}
-          <Button
-            add="flex-none align-middle mr-3 mt-1"
-            color="error"
-            small
-            flat
-            light
-            icon="delete_outline"
-            on:click={deleteItem} />
+    <div class="flex">
+      {#if deleteVisible || $parameters.allwaysShowDeleteButton}
+        <Button
+          add="flex-none align-middle mr-3 mt-1"
+          color="error"
+          small
+          flat
+          light
+          icon="delete_outline"
+          on:click={deleteItem} />
+      {/if}
+      {#if type == 'item'}
+        <Checkbox checked={item.coche} on:change={toggleItem} />
+        {#if item.coche}
+          <span class="line-through mb-2 self-center" on:click={clickItem}>
+            {item.produit}
+          </span>
+        {:else}
+          <span class="mb-2 self-center" on:click={clickItem}>
+            {item.produit}
+          </span>
         {/if}
-          {#if type == 'item'}
-            <Checkbox checked={item.coche} on:change={toggleItem} />
-            {#if item.coche}
-              <span class="line-through mb-2 self-center" on:click={clickItem}>
-                {item.produit}
-              </span>
-            {:else}
-              <span class="mb-2 self-center" on:click={clickItem}>
-                {item.produit}
-              </span>
-            {/if}
-          {:else}
-            <span class="mt-2 h-8 self-center" on:click={clickItem}>
-              {item.category}
-            </span>
-          {/if}
-      </div>
-      <hr />
+      {:else}
+        <span class="mt-2 h-8 self-center" on:click={clickItem}>
+          {item.category}
+        </span>
+      {/if}
+    </div>
+    <hr />
   </li>
 </div>
