@@ -43,3 +43,8 @@ For database replication, you can also look at:
 ## License
 
 To be defined
+
+## Demo
+
+https://grizar.github.io/shopping-list/public
+
