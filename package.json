@@ -15,7 +15,7 @@
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^5.1.2",
-    "svelte": "^3.20.1"
+    "svelte": "^3.49.0"
   },
   "dependencies": {
     "pouchdb-browser": "^7.2.1",
